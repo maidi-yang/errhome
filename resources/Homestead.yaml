@@ -10,12 +10,12 @@ keys:
     - ~/.ssh/id_rsa
 
 folders:
-    - map: ~/code
-      to: /home/vagrant/code
+    - map: d:/errand/errand
+      to: /vagrant/
 
 sites:
     - map: homestead.test
-      to: /home/vagrant/code/public
+      to: /vagrant/
 
 databases:
     - homestead
@@ -26,9 +26,21 @@ databases:
 #       client-id: foo
 #       client-token: bar
 
-# ports:
-#     - send: 50000
-#       to: 5000
-#     - send: 7777
-#       to: 777
-#       protocol: udp
+ports:
+   - send: 9080
+     to: 9080
+   - send: 9081
+     to: 9081
+   - send: 9082
+     to: 9082
+   - send: 9083
+     to: 9083
+   - send: 9084
+     to: 9084
+   - send: 9085
+     to: 9085
+   - send: 9086
+     to: 9086
+   - send: 9087
+     to: 9087
+

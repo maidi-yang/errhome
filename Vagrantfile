@@ -1,48 +1,80 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require 'json'
-require 'yaml'
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure(2) do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
 
-VAGRANTFILE_API_VERSION ||= "2"
-confDir = $confDir ||= File.expand_path(File.dirname(__FILE__))
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://atlas.hashicorp.com/search.
+  config.vm.box = "homestead"
+  config.vm.hostname = "homestead"
+  # config ssh user
+  config.ssh.username = "vagrant"
+  config.ssh.password = "vagrant"
 
-homesteadYamlPath = confDir + "/Homestead.yaml"
-homesteadJsonPath = confDir + "/Homestead.json"
-afterScriptPath = confDir + "/after.sh"
-aliasesPath = confDir + "/aliases"
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
 
-require File.expand_path(File.dirname(__FILE__) + '/scripts/homestead.rb')
+  # Create a forwarded port mapping which allows access to a specific port
+  # within the machine from a port on the host machine. In the example below,
+  # accessing "localhost:8080" will access port 80 on the guest machine.
+  config.vm.network "forwarded_port", guest: 9080, host: 9080
+  config.vm.network "forwarded_port", guest: 9081, host: 9081
+  config.vm.network "forwarded_port", guest: 9082, host: 9082
+  config.vm.network "forwarded_port", guest: 9083, host: 9083
+  config.vm.network "forwarded_port", guest: 9084, host: 9084
+  config.vm.network "forwarded_port", guest: 9086, host: 9086
+  config.vm.network "forwarded_port", guest: 9087, host: 9087
+  # Create a private network, which allows host-only access to the machine
+  # using a specific IP.
+  # config.vm.network "private_network", ip: "192.168.33.10"
 
-Vagrant.require_version '>= 1.9.0'
+  # Create a public network, which generally matched to bridged network.
+  # Bridged networks make the machine appear as another physical device on
+  # your network.
+  # config.vm.network "public_network"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-    if File.exist? aliasesPath then
-        config.vm.provision "file", source: aliasesPath, destination: "/tmp/bash_aliases"
-        config.vm.provision "shell" do |s|
-            s.inline = "awk '{ sub(\"\r$\", \"\"); print }' /tmp/bash_aliases > /home/vagrant/.bash_aliases"
-        end
-    end
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  config.vm.synced_folder "D:/errand/errand", "/vagrant"
 
-    if File.exist? homesteadYamlPath then
-        settings = YAML::load(File.read(homesteadYamlPath))
-    elsif File.exist? homesteadJsonPath then
-        settings = JSON::parse(File.read(homesteadJsonPath))
-    else
-        abort "Homestead settings file not found in #{confDir}"
-    end
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  # config.vm.provider "virtualbox" do |vb|
+  #   # Display the VirtualBox GUI when booting the machine
+  #   vb.gui = true
+  #
+  #   # Customize the amount of memory on the VM:
+  #   vb.memory = "1024"
+  # end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
 
-    Homestead.configure(config, settings)
+  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
+  # such as FTP and Heroku are also available. See the documentation at
+  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
+  # config.push.define "atlas" do |push|
+  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
+  # end
 
-    if File.exist? afterScriptPath then
-        config.vm.provision "shell", path: afterScriptPath, privileged: false, keep_color: true
-    end
-
-    if Vagrant.has_plugin?('vagrant-hostsupdater')
-        config.hostsupdater.aliases = settings['sites'].map { |site| site['map'] }
-    elsif Vagrant.has_plugin?('vagrant-hostmanager')
-        config.hostmanager.enabled = true
-        config.hostmanager.manage_host = true
-        config.hostmanager.aliases = settings['sites'].map { |site| site['map'] }
-    end
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: <<-SHELL
+  # sudo apt-get update
+  # sudo apt-get install php5-gd php5-pgsql
+  # SHELL
 end
